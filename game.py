@@ -32,21 +32,33 @@ bw = ['black','white']
 
 allcols = bw + saturated
 
-# Draw an ngon:
-def ngon(targetsurface,centerx,centery,n,radius,angle,incolor,bordercolor,border):
+# Draw a polygon:
+def drawpoly(targetsurface,polyverts,incolor,bordercolor,border):
+	pygame.draw.polygon(targetsurface,incolor,polyverts,0)
+	if border != 0:
+		pygame.draw.polygon(targetsurface,bordercolor,polyverts,border)
+
+# Generate ngon poly list:
+def ngonlist(centerx,centery,n,radius,angle):
 	if n < 3:
-		return
+		return []
 	polyverts = []
 	for i in range(n):
 		finangle = i * ((2 * math.pi) / n) + angle
 		horizcomp = radius * math.cos(finangle)
 		vertcomp = radius * math.sin(finangle)
 		polyverts.append( (centerx + horizcomp,centery + vertcomp) )
-	pygame.draw.polygon(targetsurface,incolor,polyverts,0)
-	if border != 0:
-		pygame.draw.polygon(targetsurface,bordercolor,polyverts,border)
+	return polyverts
+
+# Draw an ngon:
+def purengon(targetsurface,centerx,centery,n,radius,angle,incolor,bordercolor,border):
+	if n < 3:
+		return
+	polyverts = ngonlist(centerx,centery,n,radius,angle)
+	drawpoly(targetsurface,polyverts,incolor,bordercolor,border)
 
 
+#pygame.draw.line(targetsurface,incolor,polyverts[0],(polyverts[0][0] + 0.25*radius*math.cos(angle),polyverts[0][1] + 0.25*radius*math.sin(angle)),2)
 
 # Initializing pygame and opening a window:
 fullscreen = False
@@ -94,6 +106,7 @@ while running:
 			if each_event.key ==pygame.K_ESCAPE:
 				# If you escape, you escape
 				running = False
+				continue
 			elif each_event.key == pygame.K_F11:
 				# Toggling fullscreen
 				if fullscreen:
@@ -107,16 +120,20 @@ while running:
 					gameDisp = pygame.display.set_mode(modes[0],pygame.FULLSCREEN)
 				disps = pygame.display.get_surface()
 				pxwidth,pxheight = disps.get_size()
+				continue
+			#if state == 0:
+				# Intro
+			#elif state == 1:
+				# Game
+			#elif state == 2:
+				# Pause
 			#else:
-				#if state == 0:
-					# Intro
-				#elif state == 1:
-					# Game
-				#elif state == 2:
-					# Pause
-				#else:
-					# Outro
+				# Outro
 		elif each_event.type == pygame.KEYUP:
+			if each_event.key ==pygame.K_ESCAPE:
+				continue
+			elif each_event.key == pygame.K_F11:
+				continue
 			if state == 0:
 				# Intro
 				state = 1
@@ -144,7 +161,7 @@ while running:
 	if state == 0:
 		# Intro
 		# Test polygon draw:
-		ngon(gamefield,180,180,3 + ((loops//12) % 15),50,(tick*math.pi*2)/30,colors[saturated[loops % 12]],(0,0,0),1)
+		purengon(gamefield,180,180,3 + ((loops//12) % 15),50,(tick*math.pi*2)/30,colors[saturated[loops % 12]],(0,0,0),1)
 	#elif state == 1:
 		#Game
 	#elif state == 2:
