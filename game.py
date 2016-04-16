@@ -3,7 +3,9 @@
 import pygame
 import pygame.gfxdraw
 import pygame.draw
+import pygame.image
 import math
+import os
 
 # Color declaration:
 
@@ -61,6 +63,7 @@ def purengon(targetsurface,centerx,centery,n,radius,angle,incolor,bordercolor,bo
 #pygame.draw.line(targetsurface,incolor,polyverts[0],(polyverts[0][0] + 0.25*radius*math.cos(angle),polyverts[0][1] + 0.25*radius*math.sin(angle)),2)
 
 # Initializing pygame and opening a window:
+
 fullscreen = False
 
 pygame.init()
@@ -70,8 +73,6 @@ pxheight = 360
 
 gameDisp = pygame.display.set_mode((pxwidth,pxheight),pygame.RESIZABLE)
 
-pygame.display.set_caption('Ludum Dare 35')
-
 # Setting up the game field:
 
 gamewidth = 640
@@ -79,6 +80,18 @@ gameheight = 360
 
 gamefield = pygame.Surface((gamewidth,gameheight),0)
 gamefield.fill((255,255,255))
+
+# Title stuff
+
+pygame.display.set_caption('polyAgonY')
+titlepic_o = pygame.image.load(os.path.join('img','title.png'))
+titlepic = pygame.Surface((gamewidth,gameheight),pygame.SRCALPHA,titlepic_o.get_bitsize(),titlepic_o.get_masks())
+pygame.transform.scale(titlepic_o,(gamewidth,gameheight),titlepic)
+del titlepic_o
+anykey_o = pygame.image.load(os.path.join('img','instructions.png'))
+anykey = pygame.Surface((gamewidth,gameheight),pygame.SRCALPHA,anykey_o.get_bitsize(),anykey_o.get_masks())
+pygame.transform.scale(anykey_o,(gamewidth,gameheight),anykey)
+del anykey_o
 
 # Setting up the timer for framerate limiting:
 clock = pygame.time.Clock()
@@ -88,7 +101,6 @@ running = True
 
 # Game tick counter:
 tick = 0
-loops = 0
 
 # Game state:
 state = 0
@@ -160,8 +172,13 @@ while running:
 	# States:
 	if state == 0:
 		# Intro
-		# Test polygon draw:
-		purengon(gamefield,180,180,3 + ((loops//12) % 15),50,(tick*math.pi*2)/30,colors[saturated[loops % 12]],(0,0,0),1)
+		# Rotation rate - 30 = 1 RPS, 60 = 0.5 RPS, and so on
+		rrate = 240
+		purengon(gamefield,180,180,3 + ((tick//180) % 15),128,((tick % rrate)*math.pi*2)/rrate,colors[saturated[(tick//30)% 12]],(0,0,0),1)
+		gamefield.blit(titlepic,(0,0),None,0)
+		if (tick // 30) % 2 == 1:
+			gamefield.blit(anykey,(0,0),None,0)
+
 	#elif state == 1:
 		#Game
 	#elif state == 2:
@@ -175,9 +192,6 @@ while running:
 	clock.tick(30)
 
 	tick = tick + 1
-	if tick > 30:
-		tick = tick - 30
-		loops += 1
 	
 	# Placing the game field on screen
 	scale = min(int(pxwidth*1.0/(1.0*gamewidth)),int(pxheight*1.0/(1.0*gameheight)))
