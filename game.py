@@ -59,8 +59,32 @@ def purengon(targetsurface,centerx,centery,n,radius,angle,incolor,bordercolor,bo
 	polyverts = ngonlist(centerx,centery,n,radius,angle)
 	drawpoly(targetsurface,polyverts,incolor,bordercolor,border)
 
+# Player:
 
-#pygame.draw.line(targetsurface,incolor,polyverts[0],(polyverts[0][0] + 0.25*radius*math.cos(angle),polyverts[0][1] + 0.25*radius*math.sin(angle)),2)
+pangle = - math.pi / 2
+
+pspeed = 0.0
+
+paccel = False
+
+pdecel = False
+
+pport = False
+
+pstarboard = False
+
+px = 0.0
+
+py = 0.0
+
+pstate = 3
+
+pcolor = 'chartreuse'
+
+def renderplayer(targetsurface):
+	polyverts = ngonlist(gamewidth//2,gameheight//2,pstate,20,pangle)
+	pygame.draw.line(targetsurface,colors[pcolor],polyverts[0],(polyverts[0][0] + 5*math.cos(pangle),polyverts[0][1] + 5*math.sin(pangle)),2)
+	drawpoly(targetsurface,polyverts,colors[pcolor],colors['black'],2)
 
 # Initializing pygame and opening a window:
 
@@ -133,10 +157,18 @@ while running:
 				disps = pygame.display.get_surface()
 				pxwidth,pxheight = disps.get_size()
 				continue
-			#if state == 0:
-				# Intro
-			#elif state == 1:
+			if state == 1:
 				# Game
+				if not (paccel or pdecel):
+					if each_event.key == pygame.K_w:
+						paccel = True
+					elif each_event.key == pygame.K_s:
+						pdecel = True
+				if not (pport or pstarboard):
+					if each_event.key == pygame.K_a:
+						pport = True
+					elif each_event.key == pygame.K_d:
+						pstarboard = True
 			#elif state == 2:
 				# Pause
 			#else:
@@ -149,8 +181,16 @@ while running:
 			if state == 0:
 				# Intro
 				state = 1
-			#elif state == 1:
-				#Game
+			elif state == 1:
+				# Game
+				if each_event.key == pygame.K_w:
+					paccel = False
+				elif each_event.key == pygame.K_s:
+					pdecel = False
+				elif each_event.key == pygame.K_a:
+					pport = False
+				elif each_event.key == pygame.K_d:
+					pstarboard = False
 			#elif state == 2:
 				#Pause
 			#else:
@@ -174,13 +214,36 @@ while running:
 		# Intro
 		# Rotation rate - 30 = 1 RPS, 60 = 0.5 RPS, and so on
 		rrate = 240
-		purengon(gamefield,180,180,3 + ((tick//180) % 15),128,((tick % rrate)*math.pi*2)/rrate,colors[saturated[(tick//30)% 12]],(0,0,0),1)
+		purengon(gamefield,gameheight//2,gameheight//2,3 + ((tick//180) % 15),gameheight//3,((tick % rrate)*math.pi*2)/rrate,colors[saturated[(tick//30)% 12]],(0,0,0),1)
 		gamefield.blit(titlepic,(0,0),None,0)
 		if (tick // 30) % 2 == 1:
 			gamefield.blit(anykey,(0,0),None,0)
 
-	#elif state == 1:
+	elif state == 1:
 		#Game
+		renderplayer(gamefield)
+		px = px + pspeed * math.cos(pangle)
+		py = py - pspeed * math.sin(pangle)
+		if paccel and not pdecel:
+			pspeed = pspeed + 0.01
+			if pspeed > 1:
+				pspeed = 1
+		elif pdecel and not paccel:
+			pspeed = pspeed - 0.01
+			if pspeed < 0:
+				pspeed = 0
+		if pport and not pstarboard:
+			pangle -= 0.1
+		elif pstarboard and not pport:
+			pangle += 0.1
+		while pangle > math.pi:
+			pangle = pangle - 2*math.pi
+		while pangle < (-1)*math.pi:
+			pangle = pangle + 2*math.pi
+		# Debug print:
+		if tick % 60 == 0:
+			print('(%s,%s) %srad %s\n'%(px,py,pangle,pspeed))
+
 	#elif state == 2:
 		#Pause
 	#else:
