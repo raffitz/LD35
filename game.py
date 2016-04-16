@@ -6,6 +6,10 @@ import pygame.draw
 import pygame.image
 import math
 import os
+import random
+
+# Seed initialization:
+random.seed()
 
 # Color declaration:
 
@@ -117,6 +121,21 @@ anykey = pygame.Surface((gamewidth,gameheight),pygame.SRCALPHA,anykey_o.get_bits
 pygame.transform.scale(anykey_o,(gamewidth,gameheight),anykey)
 del anykey_o
 
+# Inverted stars, to perceive movement:
+stars = []
+def genstar():
+	return (random.randint(-gamewidth//2,gamewidth//2) - px,random.randint(-gameheight//2,gameheight//2) + py,random.randint(0,128))
+
+for i in range(256):
+	stars.append(genstar())
+
+def renderstar(targetsurface,star):
+	pygame.gfxdraw.pixel(targetsurface,int(star[0] + gamewidth//2 - px),int(star[1] + gameheight//2 + py),(star[2],star[2],star[2]))
+
+def renderstars(targetsurface):
+	for s in stars:
+		renderstar(targetsurface,s)
+
 # Setting up the timer for framerate limiting:
 clock = pygame.time.Clock()
 
@@ -221,6 +240,8 @@ while running:
 
 	elif state == 1:
 		#Game
+		renderstars(gamefield)
+
 		renderplayer(gamefield)
 		px = px + pspeed * math.cos(pangle)
 		py = py - pspeed * math.sin(pangle)
