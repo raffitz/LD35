@@ -69,6 +69,12 @@ pangle = - math.pi / 2
 
 pspeed = 0.0
 
+pmaxspeed = 5.0
+
+paccelv = 0.1
+
+pdecelv = 0.15
+
 paccel = False
 
 pdecel = False
@@ -76,6 +82,8 @@ pdecel = False
 pport = False
 
 pstarboard = False
+
+pangulaccel = 0.03
 
 px = 0.0
 
@@ -271,17 +279,17 @@ while running:
 		px = px + pspeed * math.cos(pangle)
 		py = py - pspeed * math.sin(pangle)
 		if paccel and not pdecel:
-			pspeed = pspeed + 0.1
-			if pspeed > 5:
-				pspeed = 5
+			pspeed = pspeed + paccelv
+			if pspeed > pmaxspeed:
+				pspeed = pmaxspeed
 		elif pdecel and not paccel:
-			pspeed = pspeed - 0.15
+			pspeed = pspeed - pdecelv
 			if pspeed < 0:
 				pspeed = 0
 		if pport and not pstarboard:
-			pangle -= 0.03
+			pangle -= pangulaccel
 		elif pstarboard and not pport:
-			pangle += 0.03
+			pangle += pangulaccel
 		while pangle > math.pi:
 			pangle = pangle - 2*math.pi
 		while pangle < (-1)*math.pi:
