@@ -167,6 +167,13 @@ def tickenemies(radius):
 			newsides = random.randint(3,7)
 			enemies[i] = (newc[0],newc[1],newsides,newcol,newangle)
 			continue
+		if dists >= 1.2*radius**2:
+			newc = gencoords(radius)
+			newangle = random.uniform(-math.pi,math.pi)
+			newcol = random.randint(0,11)
+			newsides = random.randint(3,7)
+			enemies[i] = (newc[0],newc[1],newsides,newcol,newangle)
+			continue
 		ex -= 0.5*math.cos(eangle)
 		ey += 0.5*math.sin(eangle)
 		opposite = -ey - py
@@ -235,6 +242,10 @@ gameover_o = pygame.image.load(os.path.join('img','gameover.png'))
 gameover = pygame.Surface((gamewidth,gameheight),pygame.SRCALPHA,gameover_o.get_bitsize(),gameover_o.get_masks())
 pygame.transform.scale(gameover_o,(gamewidth,gameheight),gameover)
 del gameover_o
+movement_o = pygame.image.load(os.path.join('img','movement.png'))
+movement = pygame.Surface((gamewidth,gameheight),pygame.SRCALPHA,movement_o.get_bitsize(),movement_o.get_masks())
+pygame.transform.scale(movement_o,(gamewidth,gameheight),movement)
+del movement_o
 
 # Inverted stars, to perceive movement:
 stars = []
@@ -337,6 +348,7 @@ while running:
 			if state == 0:
 				# Intro
 				state = 1
+				tick = 0
 				pangle = - math.pi / 2
 				pspeed = 0.0
 				pmaxspeed = 5.0
@@ -402,6 +414,7 @@ while running:
 	# Clear screen:
 	if state < 2:
 		gamefield.fill((255,255,255))
+		tick = tick + 1
 	
 	# States:
 	if state == 0:
@@ -447,6 +460,9 @@ while running:
 			state = 3
 			gamefield.blit(gameover,(0,0),None,0)
 
+		if tick < 90:
+			gamefield.blit(movement,(0,0),None,0)
+
 	#elif state == 2:
 		#Pause
 	#else:
@@ -456,8 +472,6 @@ while running:
 
 	# Framerate limiting
 	clock.tick(30)
-
-	tick = tick + 1
 	
 	# Placing the game field on screen
 	scale = min(int(pxwidth*1.0/(1.0*gamewidth)),int(pxheight*1.0/(1.0*gameheight)))
