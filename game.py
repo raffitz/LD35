@@ -91,12 +91,14 @@ py = 0.0
 
 pstate = 3
 
-pcolor = 'chartreuse'
+pradius = 20
+
+pcolor = 10
 
 def renderplayer(targetsurface):
-	polyverts = ngonlist(gamewidth//2,gameheight//2,pstate,20,pangle)
-	pygame.draw.line(targetsurface,colors[pcolor],polyverts[0],(polyverts[0][0] + 5*math.cos(pangle),polyverts[0][1] + 5*math.sin(pangle)),2)
-	drawpoly(targetsurface,polyverts,colors[pcolor],colors['black'],2)
+	polyverts = ngonlist(gamewidth//2,gameheight//2,pstate,pradius,pangle)
+	pygame.draw.line(targetsurface,colors[saturated[pcolor]],polyverts[0],(polyverts[0][0] + 0.25*pradius*math.cos(pangle),polyverts[0][1] + 0.25*pradius*math.sin(pangle)),2)
+	drawpoly(targetsurface,polyverts,colors[saturated[pcolor]],colors['black'],2)
 
 # Enemy stuff:
 
@@ -104,23 +106,19 @@ enemies = []
 
 def gencoords(radius):
 	# Generates a pair of coordinates with 95% probability of being within radius
-	absolute = random.gauss(0,radius/3)
+	absolute = 0
+	while abs(absolute) < 400:
+		absolute = random.gauss(0,radius/3)
 	phase = random.uniform(-math.pi,math.pi)
-	xcoord = absolute * math.cos(phase)
-	ycoord = absolute * math.sin(phase)
+	xcoord = absolute * math.cos(phase) + px
+	ycoord = absolute * math.sin(phase) + py
 	return (xcoord,ycoord)
 
 def genenemies(n,radius):
 	elist = []
 	for i in range(n):
 		pos = gencoords(radius)
-		sidenum = abs(random.gauss(0,1))
-		if sidenum < 1:
-			sides = 3
-		elif sidenum < 2:
-			sides = 4
-		else:
-			sides = 5
+		sides = random.randint(3,7)
 		colnum = random.randint(0,11)
 		eangle = random.uniform(-math.pi,math.pi)
 		elist.append((pos[0],pos[1],sides,colnum,eangle))
@@ -148,6 +146,57 @@ def renderenemies(targetsurface):
 		if renderenemy(targetsurface,e):
 			count += 1
 	return count
+
+def tickenemies(radius):
+	global pradius
+	for i in range(len(enemies)):
+		e = enemies[i]
+		ex = e[0]
+		ey = e[1]
+		eangle = e[4]
+		dists = (ex - px)**2 + (-ey - py)**2
+		if dists <= pradius**2:
+			newc = gencoords(radius)
+			if e[2] == pstate:
+				if e[3] == pcolor:
+					pradius += 1
+			else:
+				pradius -=1
+			newangle = random.uniform(-math.pi,math.pi)
+			newcol = random.randint(0,11)
+			newsides = random.randint(3,7)
+			enemies[i] = (newc[0],newc[1],newsides,newcol,newangle)
+			continue
+		ex -= 0.5*math.cos(eangle)
+		ey += 0.5*math.sin(eangle)
+		opposite = -ey - py
+		adjacent = ex - px
+		anglett = math.atan2(opposite,adjacent)
+		if eangle > 0 and anglett > 0:
+			if eangle > anglett:
+				eangle -= 0.01
+			else:
+				eangle += 0.01
+		elif eangle > 0 and anglett < 0:
+			if anglett > eangle - math.pi:
+				eangle -= 0.01
+			else:
+				eangle += 0.01
+		elif eangle < 0 and anglett < 0:
+			if eangle < anglett:
+				eangle += 0.01
+			else:
+				eangle -= 0.01
+		else:
+			if anglett < eangle + math.pi:
+				eangle += 0.01
+			else:
+				eangle -= 0.01
+		enemies[i] = (ex,ey,e[2],e[3],eangle)
+
+			
+
+		
 
 
 # Initializing pygame and opening a window:
@@ -202,20 +251,16 @@ def teststars():
 		sx = int(s[0] + gamewidth//2 - px)
 		sy = int(s[1] + gameheight//2 + py)
 		if sx < 0:
-			del stars[i]
-			stars.append((gamewidth//2 + px,random.randint(-gameheight//2,gameheight//2) - py,random.randint(0,128)))
+			stars[i] = (gamewidth//2 + px,random.randint(-gameheight//2,gameheight//2) - py,random.randint(0,128))
 			continue
 		if sx >= gamewidth:
-			del stars[i]
-			stars.append((-gamewidth//2 + px,random.randint(-gameheight//2,gameheight//2) - py,random.randint(0,128)))
+			stars[i] = (-gamewidth//2 + px,random.randint(-gameheight//2,gameheight//2) - py,random.randint(0,128))
 			continue
 		if sy < 0:
-			del stars[i]
-			stars.append((random.randint(-gamewidth//2,gamewidth//2) + px,gameheight//2 - py,random.randint(0,128)))
+			stars[i] = (random.randint(-gamewidth//2,gamewidth//2) + px,gameheight//2 - py,random.randint(0,128))
 			continue
 		if sy >= gameheight:
-			del stars[i]
-			stars.append((random.randint(-gamewidth//2,gamewidth//2) + px,-gameheight//2 - py,random.randint(0,128)))
+			stars[i] = (random.randint(-gamewidth//2,gamewidth//2) + px,-gameheight//2 - py,random.randint(0,128))
 			continue
 
 
@@ -306,7 +351,10 @@ while running:
 			# The window is resizeable. If it is, in fact, resized, it needs to be handled
 			pxwidth = each_event.w	# New width
 			pxheight = each_event.h	# New height
-			
+			if pxwidth < gamewidth:
+				pxwidth = gamewidth
+			if pxheight < gameheight:
+				pxheight = gameheight
 			gameDisp = pygame.display.set_mode((pxwidth,pxheight),pygame.RESIZABLE)
 			disps = pygame.display.get_surface()
 	
@@ -350,6 +398,8 @@ while running:
 			pangle = pangle - 2*math.pi
 		while pangle < (-1)*math.pi:
 			pangle = pangle + 2*math.pi
+
+		tickenemies(10000)
 		# Debug print:
 		if tick % 60 == 0:
 			print('(%s,%s) %srad %s'%(px,py,pangle,pspeed))
