@@ -172,26 +172,28 @@ def tickenemies(radius):
 		opposite = -ey - py
 		adjacent = ex - px
 		anglett = math.atan2(opposite,adjacent)
-		if eangle > 0 and anglett > 0:
-			if eangle > anglett:
-				eangle -= 0.01
+		anglevel = 0.02
+		if abs(eangle-anglett)>=2*anglevel:
+			if eangle > 0 and anglett > 0:
+				if eangle > anglett:
+					eangle -= anglevel
+				else:
+					eangle += anglevel
+			elif eangle > 0 and anglett < 0:
+				if anglett > eangle - math.pi:
+					eangle -= anglevel
+				else:
+					eangle += anglevel
+			elif eangle < 0 and anglett < 0:
+				if eangle < anglett:
+					eangle += anglevel
+				else:
+					eangle -= anglevel
 			else:
-				eangle += 0.01
-		elif eangle > 0 and anglett < 0:
-			if anglett > eangle - math.pi:
-				eangle -= 0.01
-			else:
-				eangle += 0.01
-		elif eangle < 0 and anglett < 0:
-			if eangle < anglett:
-				eangle += 0.01
-			else:
-				eangle -= 0.01
-		else:
-			if anglett < eangle + math.pi:
-				eangle += 0.01
-			else:
-				eangle -= 0.01
+				if anglett < eangle + math.pi:
+					eangle += anglevel
+				else:
+					eangle -= anglevel
 		enemies[i] = (ex,ey,e[2],e[3],eangle)
 
 			
@@ -340,6 +342,14 @@ while running:
 					pport = False
 				elif each_event.key == pygame.K_d:
 					pstarboard = False
+				elif each_event.key == pygame.K_UP:
+					pstate = ((pstate - 2) % 5) + 3
+				elif each_event.key == pygame.K_DOWN:
+					pstate = ((pstate - 4) % 5) + 3
+				elif each_event.key == pygame.K_LEFT:
+					pcolor = (pcolor - 1) % 12
+				elif each_event.key == pygame.K_RIGHT:
+					pcolor = (pcolor + 1) % 12
 			#elif state == 2:
 				#Pause
 			#else:
