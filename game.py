@@ -375,7 +375,7 @@ while running:
 			elif state == 2:
 				if each_event.key == pygame.K_SPACE:
 					state = 1
-				if each_event.key == pygame.K_i:
+				if each_event.key == pygame.K_r:
 					state = 3
 			else:
 				#Outro
