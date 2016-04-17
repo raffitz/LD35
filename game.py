@@ -231,6 +231,10 @@ anykey_o = pygame.image.load(os.path.join('img','instructions.png'))
 anykey = pygame.Surface((gamewidth,gameheight),pygame.SRCALPHA,anykey_o.get_bitsize(),anykey_o.get_masks())
 pygame.transform.scale(anykey_o,(gamewidth,gameheight),anykey)
 del anykey_o
+gameover_o = pygame.image.load(os.path.join('img','gameover.png'))
+gameover = pygame.Surface((gamewidth,gameheight),pygame.SRCALPHA,gameover_o.get_bitsize(),gameover_o.get_masks())
+pygame.transform.scale(gameover_o,(gamewidth,gameheight),gameover)
+del gameover_o
 
 # Inverted stars, to perceive movement:
 stars = []
@@ -376,7 +380,7 @@ while running:
 				if each_event.key == pygame.K_SPACE:
 					state = 1
 				if each_event.key == pygame.K_r:
-					state = 3
+					state = 0
 			else:
 				#Outro
 				if each_event.key == pygame.K_SPACE or each_event.key == pygame.K_RETURN:
@@ -396,7 +400,7 @@ while running:
 			disps = pygame.display.get_surface()
 	
 	# Clear screen:
-	if state != 2:
+	if state < 2:
 		gamefield.fill((255,255,255))
 	
 	# States:
@@ -441,6 +445,7 @@ while running:
 
 		if pradius < 5 or pradius > gameheight//2:
 			state = 3
+			gamefield.blit(gameover,(0,0),None,0)
 
 	#elif state == 2:
 		#Pause
