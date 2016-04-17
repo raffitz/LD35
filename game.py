@@ -98,6 +98,58 @@ def renderplayer(targetsurface):
 	pygame.draw.line(targetsurface,colors[pcolor],polyverts[0],(polyverts[0][0] + 5*math.cos(pangle),polyverts[0][1] + 5*math.sin(pangle)),2)
 	drawpoly(targetsurface,polyverts,colors[pcolor],colors['black'],2)
 
+# Enemy stuff:
+
+enemies = []
+
+def gencoords(radius):
+	# Generates a pair of coordinates with 95% probability of being within radius
+	absolute = random.gauss(0,radius/3)
+	phase = random.uniform(-math.pi,math.pi)
+	xcoord = absolute * math.cos(phase)
+	ycoord = absolute * math.sin(phase)
+	return (xcoord,ycoord)
+
+def genenemies(n,radius):
+	elist = []
+	for i in range(n):
+		pos = gencoords(radius)
+		sidenum = abs(random.gauss(0,1))
+		if sidenum < 1:
+			sides = 3
+		elif sidenum < 2:
+			sides = 4
+		else:
+			sides = 5
+		colnum = random.randint(0,11)
+		eangle = random.uniform(-math.pi,math.pi)
+		elist.append((pos[0],pos[1],sides,colnum,eangle))
+	return elist
+
+def renderenemy(targetsurface,enemy):
+	ex = int(enemy[0] + gamewidth//2 - px)
+	ey = int(enemy[1] + gameheight//2 + py)
+	pverts = ngonlist(ex,ey,enemy[2],5,enemy[4])
+	render = False
+	for pair in pverts:
+		if pair[0] >= 0 and pair[0] < gamewidth and pair[1] >= 0 and pair[1] < gameheight:
+			render = True
+			break
+	if not render:
+		return False
+	drawpoly(targetsurface,pverts,colors[saturated[enemy[3]]],colors['black'],1)
+	return True
+
+
+
+def renderenemies(targetsurface):
+	count = 0
+	for e in enemies:
+		if renderenemy(targetsurface,e):
+			count += 1
+	return count
+
+
 # Initializing pygame and opening a window:
 
 fullscreen = False
@@ -231,6 +283,8 @@ while running:
 			if state == 0:
 				# Intro
 				state = 1
+				del enemies
+				enemies = genenemies(1000,10000)
 			elif state == 1:
 				# Game
 				if each_event.key == pygame.K_w:
@@ -273,6 +327,8 @@ while running:
 		#Game
 		teststars()
 
+		nenemies = renderenemies(gamefield)
+
 		renderstars(gamefield)
 
 		renderplayer(gamefield)
@@ -296,7 +352,8 @@ while running:
 			pangle = pangle + 2*math.pi
 		# Debug print:
 		if tick % 60 == 0:
-			print('(%s,%s) %srad %s\n'%(px,py,pangle,pspeed))
+			print('(%s,%s) %srad %s'%(px,py,pangle,pspeed))
+			print('Rendered %s enemies'%nenemies)
 
 	#elif state == 2:
 		#Pause
