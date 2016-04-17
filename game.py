@@ -124,7 +124,7 @@ del anykey_o
 # Inverted stars, to perceive movement:
 stars = []
 def genstar():
-	return (random.randint(-gamewidth//2,gamewidth//2) - px,random.randint(-gameheight//2,gameheight//2) + py,random.randint(0,128))
+	return (random.randint(-gamewidth//2,gamewidth//2) + px,random.randint(-gameheight//2,gameheight//2) - py,random.randint(0,128))
 
 for i in range(256):
 	stars.append(genstar())
@@ -135,6 +135,29 @@ def renderstar(targetsurface,star):
 def renderstars(targetsurface):
 	for s in stars:
 		renderstar(targetsurface,s)
+
+def teststars():
+	for i in range(len(stars)):
+		s = stars[i]
+		sx = int(s[0] + gamewidth//2 - px)
+		sy = int(s[1] + gameheight//2 + py)
+		if sx < 0:
+			del stars[i]
+			stars.append((gamewidth//2 + px,random.randint(-gameheight//2,gameheight//2) - py,random.randint(0,128)))
+			continue
+		if sx >= gamewidth:
+			del stars[i]
+			stars.append((-gamewidth//2 + px,random.randint(-gameheight//2,gameheight//2) - py,random.randint(0,128)))
+			continue
+		if sy < 0:
+			del stars[i]
+			stars.append((random.randint(-gamewidth//2,gamewidth//2) + px,gameheight//2 - py,random.randint(0,128)))
+			continue
+		if sy >= gameheight:
+			del stars[i]
+			stars.append((random.randint(-gamewidth//2,gamewidth//2) + px,-gameheight//2 - py,random.randint(0,128)))
+			continue
+
 
 # Setting up the timer for framerate limiting:
 clock = pygame.time.Clock()
@@ -240,6 +263,8 @@ while running:
 
 	elif state == 1:
 		#Game
+		teststars()
+
 		renderstars(gamefield)
 
 		renderplayer(gamefield)
