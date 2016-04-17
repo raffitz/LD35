@@ -237,8 +237,11 @@ stars = []
 def genstar():
 	return (random.randint(-gamewidth//2,gamewidth//2) + px,random.randint(-gameheight//2,gameheight//2) - py,random.randint(0,128))
 
-for i in range(256):
-	stars.append(genstar())
+def genstars(num):
+	slist = []
+	for i in range(num):
+		slist.append(genstar())
+	return slist
 
 def renderstar(targetsurface,star):
 	pygame.gfxdraw.pixel(targetsurface,int(star[0] + gamewidth//2 - px),int(star[1] + gameheight//2 + py),(star[2],star[2],star[2]))
@@ -330,8 +333,25 @@ while running:
 			if state == 0:
 				# Intro
 				state = 1
+				pangle = - math.pi / 2
+				pspeed = 0.0
+				pmaxspeed = 5.0
+				paccelv = 0.1
+				pdecelv = 0.15
+				paccel = False
+				pdecel = False
+				pport = False
+				pstarboard = False
+				pangulaccel = 0.03
+				px = 0.0
+				py = 0.0
+				pstate = 3
+				pradius = 20
+				pcolor = 10
 				del enemies
 				enemies = genenemies(1000,10000)
+				del stars
+				stars = genstars(256)
 			elif state == 1:
 				# Game
 				if each_event.key == pygame.K_w:
@@ -350,10 +370,17 @@ while running:
 					pcolor = (pcolor - 1) % 12
 				elif each_event.key == pygame.K_RIGHT:
 					pcolor = (pcolor + 1) % 12
-			#elif state == 2:
-				#Pause
-			#else:
+				elif each_event.key == pygame.K_SPACE:
+					state = 2
+			elif state == 2:
+				if each_event.key == pygame.K_SPACE:
+					state = 1
+				if each_event.key == pygame.K_i:
+					state = 3
+			else:
 				#Outro
+				if each_event.key == pygame.K_SPACE or each_event.key == pygame.K_RETURN:
+					state = 0
 		elif each_event.type == pygame.QUIT:
 			# If you wanna exit the window, we'll let'ya
 			running = False
@@ -369,7 +396,8 @@ while running:
 			disps = pygame.display.get_surface()
 	
 	# Clear screen:
-	gamefield.fill((255,255,255))
+	if state != 2:
+		gamefield.fill((255,255,255))
 	
 	# States:
 	if state == 0:
@@ -410,10 +438,9 @@ while running:
 			pangle = pangle + 2*math.pi
 
 		tickenemies(10000)
-		# Debug print:
-		if tick % 60 == 0:
-			print('(%s,%s) %srad %s'%(px,py,pangle,pspeed))
-			print('Rendered %s enemies'%nenemies)
+
+		if pradius < 5 or pradius > gameheight//2:
+			state = 3
 
 	#elif state == 2:
 		#Pause
