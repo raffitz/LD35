@@ -5,6 +5,7 @@ import pygame.gfxdraw
 import pygame.draw
 import pygame.image
 import pygame.mixer
+import pygame.font
 import math
 import os
 import random
@@ -472,6 +473,25 @@ while running:
 		if pradius < 5 or pradius > gameheight//2:
 			state = 3
 			gamefield.blit(gameover,(0,0),None,0)
+			pygame.font.init()
+			pixel = pygame.font.Font(os.path.join('txt','PIXEL___.TTF'),16)
+			seconds = tick//30
+			minutes = seconds//60
+			seconds = seconds%60
+			message = ""
+			if minutes > 0:
+				message = "%s%d minutes, "%(message,minutes)
+			message = "%s%d seconds"%(message,seconds)
+			textsurf = pixel.render(message,False,colors['white'],None)
+			tw = textsurf.get_width()
+			tos = (gamewidth - tw)//2
+			gamefield.blit(textsurf,(tos,32),None,0)
+			del message
+			del textsurf
+			del tw
+			del tos
+			del pixel
+			pygame.font.quit()
 
 		if tick < 90:
 			gamefield.blit(movement,(0,0),None,0)
