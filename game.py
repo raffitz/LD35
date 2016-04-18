@@ -482,7 +482,7 @@ while running:
 			if minutes > 0:
 				message = "%s%d minutes, "%(message,minutes)
 			message = "%s%d seconds"%(message,seconds)
-			textsurf = pixel.render(message,False,colors['white'],None)
+			textsurf = pixel.render(message,False,colors['white'],colors['black'])
 			tw = textsurf.get_width()
 			tos = (gamewidth - tw)//2
 			gamefield.blit(textsurf,(tos,32),None,0)
