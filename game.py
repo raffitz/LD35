@@ -4,6 +4,7 @@ import pygame
 import pygame.gfxdraw
 import pygame.draw
 import pygame.image
+import pygame.mixer
 import math
 import os
 import random
@@ -160,8 +161,12 @@ def tickenemies(radius):
 			if e[2] == pstate:
 				if e[3] == pcolor:
 					pradius += 1
+					blip.play()
+				else:
+					nop.play()
 			else:
 				pradius -=1
+				ouch.play()
 			newangle = random.uniform(-math.pi,math.pi)
 			newcol = random.randint(0,11)
 			newsides = random.randint(3,7)
@@ -246,6 +251,14 @@ movement_o = pygame.image.load(os.path.join('img','movement.png'))
 movement = pygame.Surface((gamewidth,gameheight),pygame.SRCALPHA,movement_o.get_bitsize(),movement_o.get_masks())
 pygame.transform.scale(movement_o,(gamewidth,gameheight),movement)
 del movement_o
+
+# Sound Stuff
+
+pygame.mixer.init()
+
+ouch = pygame.mixer.Sound(os.path.join('snd','ouch.wav'))
+blip = pygame.mixer.Sound(os.path.join('snd','blip.wav'))
+nop = pygame.mixer.Sound(os.path.join('snd','nop.wav'))
 
 # Inverted stars, to perceive movement:
 stars = []
