@@ -67,35 +67,36 @@ def purengon(targetsurface,centerx,centery,n,radius,angle,incolor,bordercolor,bo
 
 # Player:
 
-pangle = - math.pi / 2
+default_pangle = - math.pi / 2
 
-pspeed = 0.0
+default_pspeed = 0.0
 
-pmaxspeed = 5.0
+default_pmaxspeed = 10.0
 
-paccelv = 0.1
 
-pdecelv = 0.15
+default_paccelv = 1.0
 
-paccel = False
+default_pdecelv = 1.0
 
-pdecel = False
+default_paccel = False
 
-pport = False
+default_pdecel = False
 
-pstarboard = False
+default_pport = False
 
-pangulaccel = 0.03
+default_pstarboard = False
 
-px = 0.0
+default_pangulaccel = 0.06
 
-py = 0.0
+default_px = 0.0
 
-pstate = 3
+default_py = 0.0
 
-pradius = 20
+default_pstate = 3
 
-pcolor = 10
+default_pradius = 20
+
+default_pcolor = 10
 
 def renderplayer(targetsurface):
 	polyverts = ngonlist(gamewidth//2,gameheight//2,pstate,pradius,pangle)
@@ -363,21 +364,21 @@ while running:
 				# Intro
 				state = 1
 				tick = 0
-				pangle = - math.pi / 2
-				pspeed = 0.0
-				pmaxspeed = 5.0
-				paccelv = 0.1
-				pdecelv = 0.15
-				paccel = False
-				pdecel = False
-				pport = False
-				pstarboard = False
-				pangulaccel = 0.03
-				px = 0.0
-				py = 0.0
-				pstate = 3
-				pradius = 20
-				pcolor = 10
+				pangle = default_pangle
+				pspeed = default_pspeed
+				pmaxspeed = default_pmaxspeed
+				paccelv = default_paccelv
+				pdecelv = default_pdecelv
+				paccel = default_paccel
+				pdecel = default_pdecel
+				pport = default_pport
+				pstarboard = default_pstarboard
+				pangulaccel = default_pangulaccel
+				px = default_px
+				py = default_py
+				pstate = default_pstate
+				pradius = default_pradius
+				pcolor = default_pcolor
 				del enemies
 				enemies = genenemies(1000,10000)
 				del stars
