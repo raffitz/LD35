@@ -121,7 +121,7 @@ def genenemies(n,radius):
 	elist = []
 	for i in range(n):
 		pos = gencoords(radius)
-		sides = random.randint(3,7)
+		sides = random.randint(3,5)
 		colnum = random.randint(0,len(saturated)-1)
 		eangle = random.uniform(-math.pi,math.pi)
 		elist.append((pos[0],pos[1],sides,colnum,eangle))
@@ -171,14 +171,14 @@ def tickenemies(radius):
 				ouch.play()
 			newangle = random.uniform(-math.pi,math.pi)
 			newcol = random.randint(0,len(saturated)-1)
-			newsides = random.randint(3,7)
+			newsides = random.randint(3,5)
 			enemies[i] = (newc[0],newc[1],newsides,newcol,newangle)
 			continue
 		if dists >= 1.2*radius**2:
 			newc = gencoords(radius)
 			newangle = random.uniform(-math.pi,math.pi)
 			newcol = random.randint(0,len(saturated)-1)
-			newsides = random.randint(3,7)
+			newsides = random.randint(3,5)
 			enemies[i] = (newc[0],newc[1],newsides,newcol,newangle)
 			continue
 		ex -= 0.5*math.cos(eangle)
@@ -394,9 +394,9 @@ while running:
 				elif each_event.key == pygame.K_d:
 					pstarboard = False
 				elif each_event.key == pygame.K_UP:
-					pstate = ((pstate - 2) % 5) + 3
+					pstate = ((pstate - 2) % 3) + 3
 				elif each_event.key == pygame.K_DOWN:
-					pstate = ((pstate - 4) % 5) + 3
+					pstate = ((pstate - 4) % 3) + 3
 				elif each_event.key == pygame.K_LEFT:
 					pcolor = (pcolor - 1) % len(saturated)
 				elif each_event.key == pygame.K_RIGHT:
