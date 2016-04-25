@@ -32,9 +32,9 @@ colors = {	'black':	(0,0,0),
 
 primaries = ['red','green','blue']
 secondaries = ['yellow','cyan','magenta']
-tertiaries = ['azure','violet','rose','orange','chartreuse','spring']
+#tertiaries = ['azure','violet','rose','orange','chartreuse','spring']
 
-saturated = primaries + secondaries + tertiaries
+saturated = primaries + secondaries
 
 bw = ['black','white']
 
@@ -96,7 +96,7 @@ default_pstate = 3
 
 default_pradius = 20
 
-default_pcolor = 10
+default_pcolor = 2
 
 def renderplayer(targetsurface):
 	polyverts = ngonlist(gamewidth//2,gameheight//2,pstate,pradius,pangle)
@@ -122,7 +122,7 @@ def genenemies(n,radius):
 	for i in range(n):
 		pos = gencoords(radius)
 		sides = random.randint(3,7)
-		colnum = random.randint(0,11)
+		colnum = random.randint(0,len(saturated)-1)
 		eangle = random.uniform(-math.pi,math.pi)
 		elist.append((pos[0],pos[1],sides,colnum,eangle))
 	return elist
@@ -170,14 +170,14 @@ def tickenemies(radius):
 				pradius -=1
 				ouch.play()
 			newangle = random.uniform(-math.pi,math.pi)
-			newcol = random.randint(0,11)
+			newcol = random.randint(0,len(saturated)-1)
 			newsides = random.randint(3,7)
 			enemies[i] = (newc[0],newc[1],newsides,newcol,newangle)
 			continue
 		if dists >= 1.2*radius**2:
 			newc = gencoords(radius)
 			newangle = random.uniform(-math.pi,math.pi)
-			newcol = random.randint(0,11)
+			newcol = random.randint(0,len(saturated)-1)
 			newsides = random.randint(3,7)
 			enemies[i] = (newc[0],newc[1],newsides,newcol,newangle)
 			continue
@@ -398,9 +398,9 @@ while running:
 				elif each_event.key == pygame.K_DOWN:
 					pstate = ((pstate - 4) % 5) + 3
 				elif each_event.key == pygame.K_LEFT:
-					pcolor = (pcolor - 1) % 12
+					pcolor = (pcolor - 1) % len(saturated)
 				elif each_event.key == pygame.K_RIGHT:
-					pcolor = (pcolor + 1) % 12
+					pcolor = (pcolor + 1) % len(saturated)
 				elif each_event.key == pygame.K_SPACE:
 					state = 2
 			elif state == 2:
@@ -436,7 +436,10 @@ while running:
 		# Intro
 		# Rotation rate - 30 = 1 RPS, 60 = 0.5 RPS, and so on
 		rrate = 240
-		purengon(gamefield,gameheight//2,gameheight//2,3 + ((tick//180) % 15),gameheight//3,((tick % rrate)*math.pi*2)/rrate,colors[saturated[(tick//30)% 12]],(0,0,0),1)
+		purengon(gamefield,gameheight//2,gameheight//2,3 + ((tick//180)
+			% 15),gameheight//3,((tick %
+				rrate)*math.pi*2)/rrate,colors[saturated[(tick//30)%
+					len(saturated)]],(0,0,0),1)
 		gamefield.blit(titlepic,(0,0),None,0)
 		if (tick // 30) % 2 == 1:
 			gamefield.blit(anykey,(0,0),None,0)
