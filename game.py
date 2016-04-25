@@ -32,9 +32,9 @@ colors = {	'black':	(0,0,0),
 
 primaries = ['red','green','blue']
 secondaries = ['yellow','cyan','magenta']
-#tertiaries = ['azure','violet','rose','orange','chartreuse','spring']
+tertiaries = ['azure','violet','rose','orange','chartreuse','spring']
 
-saturated = primaries + secondaries
+saturated = tertiaries
 
 bw = ['black','white']
 
