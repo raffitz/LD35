@@ -74,9 +74,9 @@ default_pspeed = 0.0
 default_pmaxspeed = 10.0
 
 
-default_paccelv = 1.0
+default_paccelv = 0.2
 
-default_pdecelv = 1.0
+default_pdecelv = 0.3
 
 default_paccel = False
 
